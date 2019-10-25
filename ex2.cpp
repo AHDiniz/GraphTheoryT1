@@ -93,6 +93,7 @@ const int Graph::dijkstra(int s, int e) const
 		for (int o : open)
 			closest = (costs[o] < costs[closest]) ? o : closest;
 		remove(open, closest);
+		if (closest == e) break;
 		for (int o : open)
 		{
 			if (get(closest, o))
