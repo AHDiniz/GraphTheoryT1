@@ -41,14 +41,14 @@ int main(void)
 		int n, m;
 		std::cin >> n >> m;
 
-		Graph g(n, m);
+		Graph *g = new Graph(n, m);
 
 		for (int i = 0; i < m; ++i)
 		{
 			int u, v;
 			std::cin >> u >> v;
-			g.set(u - 1, v - 1);
-			g.set(v - 1, u - 1);
+			g->set(u - 1, v - 1);
+			g->set(v - 1, u - 1);
 		}
 
 		int c, r, e;
@@ -56,11 +56,13 @@ int main(void)
 
 		for (int i = 0; i < n; ++i)
 		{
-			g.unset(i, e - 1);
-			g.unset(e - 1, i);
+			g->unset(i, e - 1);
+			g->unset(e - 1, i);
 		}
 
-		std::cout << g.dijkstra(c - 1, r - 1) << std::endl;
+		std::cout << g->dijkstra(c - 1, r - 1) << std::endl;
+
+		delete g;
 	}
 
 	return 0;
