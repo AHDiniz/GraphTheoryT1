@@ -12,11 +12,16 @@ inline void remove(std::vector<T> &v, const T e)
     v.erase(std::remove(v.begin(), v.end(), e), v.end());
 }
 
+template<typename T>
+inline bool contains(std::vector<T> v, const T e)
+{
+    return std::find(v.begin(), v.end(), e) != v.end();
+}
+
 class Graph
 {
 public:
     Graph(int n, int m);
-    ~Graph();
 
     inline void set(const int u, const int v) { adj[u * n + v] = 1; }
     inline void unset(const int u, const int v) { adj[u * n + v] = 0; }
@@ -25,7 +30,7 @@ public:
     const int dijkstra(int s, int e) const;
 private:
     int n, m;
-    int* adj;
+    std::vector<int> adj;
 };
 
 int main(void)
@@ -66,44 +71,37 @@ Graph::Graph(int n, int m)
     this->n = n;
     this->m = m;
 
-    adj = (int*) malloc( n*n * sizeof(int));
-
     for (int i = 0; i <= n * n; ++i)
-        adj[i] = 0;
-}
-
-Graph::~Graph(){
-    free(adj);
+        adj.push_back(0);
 }
 
 const int Graph::dijkstra(int s, int e) const
 {
     std::vector<int> costs;
-    std::vector<int> open;
+    std::vector<int> closed;
 
     for (int i = 0; i < n; ++i)
     {
-        open.push_back(i);
         if (i == s) costs.push_back(0);
         else costs.push_back(INFINITY);
     }
 
-    while (!open.empty())
+    while (closed.size() != n)
     {
-        int closest = open[0];
-        for (int o : open)
-            closest = (costs[o] < costs[closest]) ? o : closest;
-        remove(open, closest);
-        if (closest == e) break;
-        for (int o : open)
+        int closest = 0;
+        for (int i = 0; i < n; ++i)
+            if (!contains(closed, i))
+                closest = (costs[i] < costs[closest]) ? i : closest;
+        closed.push_back(closest);
+        for (int i = 0; i < n; ++i)
         {
-            if (get(closest, o))
+            if (!contains(closed, i) && get(closest, i))
             {
-                int c = get(closest, o) + costs[closest];
-                costs[o] = (costs[o] < c) ? costs[o] : c;
+                int c = get(closest, i) + costs[closest];
+                costs[i] = (costs[i] < c) ? costs[i] : c;
             }
         }
     }
-
+    
     return costs[e];
 }
